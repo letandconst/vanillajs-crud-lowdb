@@ -1,0 +1,29 @@
+{
+	"name": "crud-lowdb-and-localstorage",
+	"version": "1.0.0",
+	"description": "This project is a simple CRUD web application built using HTML, CSS, Bootstrap, and Vanilla JavaScript. It utilizes Lowdb and LocalStorage for data storage and manipulation, while incorporating Lodash for additional utility functions. The application allows users to create, read, update, and delete data with a responsive user interface.",
+	"main": "index.js",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/letandconst/vanillajs-crud-lowdb.git"
+	},
+	"keywords": [
+		"JavaScript",
+		"lowdb",
+		"lodash",
+		"localStorage"
+	],
+	"author": "",
+	"license": "ISC",
+	"bugs": {
+		"url": "https://github.com/letandconst/vanillajs-crud-lowdb/issues"
+	},
+	"homepage": "https://github.com/letandconst/vanillajs-crud-lowdb#readme",
+	"dependencies": {
+		"sass": "^1.63.6"
+	},
+	"devDependencies": {}
+}
