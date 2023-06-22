@@ -1,0 +1,41 @@
+{
+  "name": "crud-lowdb-and-localstorage",
+  "version": "1.0.0",
+  "description": "This project is a simple CRUD web application built using HTML, CSS, Bootstrap, and Vanilla JavaScript. It utilizes Lowdb and LocalStorage for data storage and manipulation, while incorporating Lodash for additional utility functions. The application allows users to create, read, update, and delete data with a responsive user interface.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/letandconst/js-mini.git"
+  },
+  "keywords": [
+    "JavaScript",
+    "lowdb",
+    "lodash",
+    "localStorage"
+  ],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/letandconst/js-mini/issues"
+  },
+  "homepage": "https://github.com/letandconst/js-mini#readme",
+  "dependencies": {
+    "@popperjs/core": "^2.11.8",
+    "bootstrap": "^5.3.0",
+    "bootstrap-icons": "^1.10.5",
+    "lodash": "^4.17.21",
+    "lowdb": "^6.0.1",
+    "sass": "^1.63.6"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.22.5",
+    "@babel/core": "^7.22.5",
+    "@babel/preset-env": "^7.22.5",
+    "babel-loader": "^9.1.2",
+    "webpack": "^5.88.0",
+    "webpack-cli": "^5.1.4"
+  }
+}
