@@ -12,20 +12,56 @@ document.addEventListener('DOMContentLoaded', () => {
 	// Variables
 	const studentsTable = document.querySelector('#students-table > tbody');
 	const form = document.querySelector('#students-form');
+	const updateStudentForm = document.querySelector('#update-students-form');
 	const searchInput = document.querySelector('#search-input');
-	const container = document.querySelector('#addStudentModal');
-	const modal = new bootstrap.Modal(container);
+	const addContainer = document.querySelector('#addStudentModal');
+	const editContainer = document.querySelector('#editStudentModal');
+	const modal = new bootstrap.Modal(addContainer);
+	const editModal = new bootstrap.Modal(editContainer);
 
 	// Form Inputs
 	const fullName = document.querySelector("input[name='studentName']");
 	const address = document.querySelector("input[name='studentAddress']");
 	const course = document.querySelector("select[name='studentCourse']");
 
+	// Edit Form Inputs
+	const currentFullName = document.querySelector("input[name='currentFullName']");
+	const currentAddress = document.querySelector("input[name='currentAddress']");
+	const currentBirthdate = document.querySelector("input[name='currentBirthdate']");
+	const currentCourse = document.querySelector("select[name='currentCourse']");
+	const maleRadio = document.querySelector('#studentMale');
+	const femaleRadio = document.querySelector('#studentFemale');
+
+	let selectedStudentID;
+
 	// Function for adding a student data
 	const addStudent = (students) => {
 		db.get('students').push(students).write();
 		alert('Student has been successfully added!');
 	};
+
+	const getStudentRecord = (student) => {
+		selectedStudentID = student.studentID;
+		currentFullName.value = student.studentName;
+		currentAddress.value = student.studentAddress;
+		currentBirthdate.value = student.studentBirthDate;
+		currentCourse.value = student.studentCourse;
+
+		if (student.studentGender === 'Male') {
+			maleRadio.checked = true;
+		} else if (student.studentGender === 'Female') {
+			femaleRadio.checked = true;
+		}
+	};
+
+	// Add event listener to the table and listen for click events
+	studentsTable.addEventListener('click', function (e) {
+		const studentRow = e.target.closest('tr');
+		if (e.target.classList.contains('edit')) {
+			const record = db.get('students').find({ studentID: studentRow.dataset.ids }).value();
+			getStudentRecord(record);
+		}
+	});
 
 	// Function for deleting a student data
 	studentsTable.addEventListener('click', function (e) {
@@ -44,10 +80,10 @@ document.addEventListener('DOMContentLoaded', () => {
 	});
 
 	// Function to filter the data based on the search query
-	function filterData(query) {
+	const filterData = (query) => {
 		const filteredStudents = students.filter((student) => student.studentName.toLowerCase().includes(query.toLowerCase()));
 		displayStudents(filteredStudents);
-	}
+	};
 
 	// Event listener for the search input field
 	searchInput.addEventListener('input', function (e) {
@@ -69,33 +105,32 @@ document.addEventListener('DOMContentLoaded', () => {
 			noDataRow.appendChild(noDataCell);
 			studentsTable.appendChild(noDataRow);
 		} else {
-			const rows = students.map((student) => {
+			const rows = students.map((student, index) => {
 				const row = `<tr style="text-align:center;" data-ids="${student.studentID}">
-        <td>${student.studentID}</td>
-        <td>${student.studentName}</td>
-        <td>${student.studentBirthDate}</td>
-        <td>${student.studentGender}</td>
-        <td>${student.studentAddress}</td>
-        <td>${student.studentCourse}</td>
-        <td>
-          <button
-            class="btn btn-warning edit"
-            type="button" data-toggle="modal" data-target="#editModal"
-            style="margin-bottom: 0; margin-left: 0; font-size:12px;"
-          >
-         <i class="bi bi-pencil-fill"></i>
-         </button>
-         
-          <button
-            class="btn btn-danger delete"
-            type="button"
-            style="margin-bottom: 0; margin-left: 5px; font-size:12px;"
-          >
-          <i class="bi bi-trash-fill"></i>
-          </button>
-        </td>
-      </tr>`;
-
+								<td>${student.studentID}</td>
+								<td>${student.studentName}</td>
+								<td>${student.studentBirthDate}</td>
+								<td>${student.studentGender}</td>
+								<td>${student.studentAddress}</td>
+								<td>${student.studentCourse}</td>
+								<td>
+								<button
+									class="btn btn-warning "
+									type="button" data-toggle="modal" data-bs-toggle="modal"
+									data-bs-target="#editStudentModal"
+									data-id="${index}"		
+								>
+								<i class="bi bi-pencil-fill edit"></i>
+								</button>
+								
+								<button
+									class="btn btn-danger"
+									type="button"
+								>
+								<i class="bi bi-trash-fill  delete"></i>
+								</button>
+								</td>
+      						</tr>`;
 				return row;
 			});
 			studentsTable.innerHTML = rows.join('');
@@ -119,7 +154,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 	// Clear current inputs when modal closed
 
-	container.addEventListener('hide.bs.modal', function (event) {
+	addContainer.addEventListener('hide.bs.modal', function (even0t) {
 		// Clear the datepicker
 		datepicker.setDate({
 			clear: true,
@@ -131,7 +166,7 @@ document.addEventListener('DOMContentLoaded', () => {
 		course.value = '';
 	});
 
-	// Function for form submit
+	// Function for adding student data
 
 	form.addEventListener('submit', function (e) {
 		e.preventDefault();
@@ -170,17 +205,36 @@ document.addEventListener('DOMContentLoaded', () => {
 			alert('all field must not be empty');
 		}
 	});
+
+	// Function for updating student data
+	updateStudentForm.addEventListener('submit', function (e) {
+		e.preventDefault();
+
+		const updatedAddress = currentAddress.value;
+		const updatedCourse = currentCourse.value;
+
+		const studentRecord = db.get('students').find({ studentID: selectedStudentID }).value();
+		studentRecord.studentAddress = updatedAddress;
+		studentRecord.studentCourse = updatedCourse;
+
+		db.get('students').find({ studentID: selectedStudentID }).assign(studentRecord).write();
+
+		editModal.hide();
+		document.body.classList.remove('modal-open'); // Remove the 'modal-open' class from the body
+		document.querySelector('.modal-backdrop').remove(); // Remove the modal backdrop element
+		displayStudents(students);
+	});
+
+	// Function for generating random student ID
+	const generateRandomID = (length) => {
+		const characters = '0123456789';
+		let randomID = '';
+
+		for (let i = 0; i < length; i++) {
+			const randomIndex = Math.floor(Math.random() * characters.length);
+			randomID += characters.charAt(randomIndex);
+		}
+
+		return randomID;
+	};
 });
-
-// Function for generating random student ID
-const generateRandomID = (length) => {
-	const characters = '0123456789';
-	let randomID = '';
-
-	for (let i = 0; i < length; i++) {
-		const randomIndex = Math.floor(Math.random() * characters.length);
-		randomID += characters.charAt(randomIndex);
-	}
-
-	return randomID;
-};
